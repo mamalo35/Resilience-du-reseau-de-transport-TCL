@@ -15,6 +15,13 @@ Projet réalisé à Polytech Lyon (juin 2026) par **Malo Vaillant** et **Sally R
 
 **Résultat principal :** les lignes **A et D** sont les plus critiques du réseau, avec 6 à 7 minutes de surcoût moyen par trajet et des usagers qui basculeraient probablement vers un autre mode de transport. La ligne B suit avec environ 2 minutes, grâce à une redondance partielle avec la ligne A.
 
+## Application interactive (Streamlit)
+
+Le calcul d'itinéraire du notebook est aussi disponible sous forme d'**application web**. On choisit une date, une heure et deux stations, et l'application affiche l'heure d'arrivée, la durée du trajet, le nombre de correspondances et le tracé sur une carte, avec une couleur par ligne empruntée.
+
+![Application Streamlit : itinéraire Bellecour → Université Lyon 1](figures/app_streamlit.png)
+
+
 ## Données
 
 Données **GTFS** (General Transit Feed Specification) du réseau urbain TCL, en accès libre sur le Point d'accès national aux données de transport : [GTFS – Réseau urbain TCL (transport.data.gouv.fr)](https://transport.data.gouv.fr/resources/81943).
@@ -53,7 +60,7 @@ Un Dijkstra classique ignore les correspondances. On travaille donc sur des éta
 - **changer de ligne** : 90 s de marche entre quais + attente moyenne de la nouvelle ligne ;
 - **premier embarquement** : attente moyenne de la ligne.
 
-L'attente est évaluée à l'**heure réelle d'arrivée** à chaque correspondance (heure de départ + temps déjà écoulé), et non à l'heure de départ. Pour l'origine et la destination, les 3 stations les plus proches sont testées (distance à vol d'oiseau × 1,3 pour tenir compte des détours), et on garde le trajet total le plus court.
+L'attente est évaluée à l'**heure réelle d'arrivée** à chaque correspondance (heure de départ + temps déjà écoulé), et non à l'heure de départ. Pour l'origine et la destination, les 10 stations les plus proches sont testées (distance à vol d'oiseau × 1,3 pour tenir compte des détours), et on garde le trajet total le plus court.
 
 ### 4. Simulation de la demande par chaîne de Markov
 
@@ -96,14 +103,25 @@ Le rapport complet est dans [`rapport_projet_TCL.pdf`](rapport_projet_TCL.pdf).
 
 ## Exécution
 
+Dans les deux cas, commencer par télécharger les [données GTFS des TCL](https://transport.data.gouv.fr/resources/81943) et décompresser l'archive.
+
+### Notebook
+
 ```bash
 pip install pandas numpy networkx matplotlib
 ```
 
-1. Télécharger les [données GTFS des TCL](https://transport.data.gouv.fr/resources/81943), décompresser l'archive et placer les fichiers `.txt` dans le même dossier que le notebook.
+1. Placer les fichiers `.txt` dans le même dossier que le notebook.
 2. Adapter les chemins de chargement des fichiers (le notebook a été écrit pour Google Colab, avec des chemins en `/content/`).
 3. Ouvrir `metro_tcl.ipynb` : la cellule **Paramètres** permet de changer la date, l'heure et les coordonnées de départ et d'arrivée.
 
+### Application Streamlit
+
+1. Placer les fichiers `.txt` dans un dossier `app/data/`.
+2. Depuis le dossier `app/`, installer les dépendances puis lancer l'application :
+
+L'application s'ouvre dans le navigateur. Le premier chargement prend quelques secondes (lecture de `stop_times.txt` et construction du graphe), les suivants sont instantanés grâce au cache.
+
 ## Outils
 
-Python · pandas · NumPy · NetworkX · Matplotlib · données GTFS
+Python · pandas · NumPy · NetworkX · Matplotlib · Streamlit · Plotly · données GTFS
